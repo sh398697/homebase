@@ -148,7 +148,7 @@ def get_messages():
   for message in Message.query.all():
     message_dict = {
                   "id": message.id,
-                  "conent": message.content,
+                  "content": message.content,
                   "team_id": message.team_id,
                   "author_coach_id": message.author_coach_id,
                   "author_guardian_id": message.author_guardian_id,
