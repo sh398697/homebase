@@ -15,6 +15,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.json.compact = False
 
+app.config['JWT_SECRET_KEY'] = '2b5faaf05ca77b1e23aa9f3e1c05d840'
+
 db.init_app(app)
 
 # Use this to create your tables
@@ -51,6 +53,28 @@ def get_coaches():
   response = make_response(
         coaches,
         200,
+        {"Content-Type": "application/json"}
+    )
+  return response
+
+@app.route("/coaches", methods=['POST'])
+def create_coach():
+  data = request.get_json()
+  coach = Coach(fname=data['fname'], lname=data['lname'], email=data['email'], phone=data['phone'], image_url=data['image_url'], password=data['password'], team_id=data['team_id'])
+  coach_dict = {
+                  "fname": coach.fname,
+                  "lname": coach.lname,
+                  "email": coach.email,
+                  "phone": coach.phone,
+                  "password": coach.password_hash,
+                  "image_url": coach.image_url,
+                  "team_id": coach.team_id
+                  }
+  db.session.add(coach)
+  db.session.commit()
+  response = make_response(
+        coach_dict,
+        201,
         {"Content-Type": "application/json"}
     )
   return response
@@ -201,6 +225,60 @@ def get_playeravailability():
     {"Content-Type": "application/json"}
   )
   return response
+
+
+
+@app.route('/coachlogin', methods=['POST'])
+def coachlogin():
+  email = request.json.get('email')
+  password = request.json.get('password')
+  coach = Coach.query.filter_by(email=email).first()
+  if not coach or not coach.check_password(password):
+    return make_response(
+      {"error": "Invalid email or password"},
+      401,
+      {"Content-Type": "application/json"}
+    )
+  token = create_access_token(identity=coach.id)
+  response = make_response(
+  {"token": token},
+  200,
+  {"Content-Type": "application/json"}
+  )
+  # Set the cookie with an expiration time of 24 hours
+  expires = datetime.now() + timedelta(days=1)
+  response.set_cookie("token", token, expires=expires)
+  return response
+
+
+@app.route('/get-coach-data', methods=['GET'])
+@jwt_required()
+def get_coach_data():
+    coach_id = get_jwt_identity()
+    coach = Coach.query.get(coach_id)
+
+    if coach:
+        coach_dict = {
+            "id": coach.id,
+            "fname": coach.fname,
+            "lname": coach.lname,
+            "email": coach.email,
+            "phone": coach.phone,
+            "image_url": coach.image_url
+        }
+        response = make_response(
+            coach_dict,
+            200,
+            {"Content-Type": "application/json"}
+        )
+    else:
+        response = make_response(
+            {"error": "User not found"},
+            404,
+            {"Content-Type": "application/json"}
+        )
+
+    return response
     
 ####################################################################################################
 

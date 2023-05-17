@@ -14,6 +14,9 @@ function Header() {
             <NavLink to="/">Home</NavLink>
           </li>
           <li>
+            <NavLink to="/account">My Account</NavLink>
+          </li>
+          <li>
             <NavLink to="/teams">Teams</NavLink>
           </li>
           <li>

@@ -26,9 +26,12 @@ if __name__ == '__main__':
         db.session.commit()
 
         # Create coaches
-        coach1 = Coach(fname="Joey", lname="Beef", team_id=team1.id, email="joey@beef.com")
+        coach1 = Coach(fname="Joey", lname="Beef", team_id=team1.id, email="joey@beef.com", phone="123-456-7890", password="test", image_url="https://pbs.twimg.com/media/E_gSj9qWUAYh4Wz.jpg:large")
         coach1.set_password("test")
-        coach2 = Coach(fname="Robert", lname="Tringali", team_id=team2.id, email="robert@tringali.com")
+        
+        coach2 = Coach(fname="Robert", lname="Tringali", team_id=team2.id, email="robert@tringali.com", phone="123-123-1234", password="test", image_url="https://upload.wikimedia.org/wikipedia/en/thumb/1/16/Coach_Eric_Taylor_FNL_S4.jpg/300px-Coach_Eric_Taylor_FNL_S4.jpg")
+
+        
         coach2.set_password("test")
 
         db.session.add(coach1)

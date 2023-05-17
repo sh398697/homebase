@@ -14,8 +14,17 @@ class Coach(db.Model):
     phone = db.Column(db.String(100))
     image_url = db.Column(db.String(300))
     password_hash = db.Column(db.String(128))
-    team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False)
+    team_id = db.Column(db.Integer, db.ForeignKey('team.id'))
     
+    def __init__(self, fname, lname, email, phone, password, image_url, team_id):
+        self.fname = fname
+        self.lname = lname
+        self.email = email
+        self.phone = phone
+        self.image_url = image_url
+        self.team_id = team_id
+        self.password_hash = generate_password_hash(password)
+        
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
     
