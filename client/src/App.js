@@ -7,6 +7,8 @@ import Home from "./components/Home";
 import Account from "./components/Account";
 import CoachesLogin from "./components/CoachesLogin";
 import CoachesRegister from "./components/CoachesRegister";
+import CoachesHome from "./components/CoachesHome";
+import CreateTeam from "./components/CreateTeam";
 import GuardiansLogin from "./components/GuardiansLogin";
 import GuardiansRegister from "./components/GuardiansRegister";
 import TeamList from "./components/TeamList";
@@ -92,6 +94,8 @@ function App() {
           <Route path="/account" element={<Account />} />
           <Route path="/coachesregister" element={<CoachesRegister />} />
           <Route path="/coacheslogin" element={<CoachesLogin handleSuccessfulCoachLogin={handleSuccessfulCoachLogin} />} />
+          <Route path="/coacheshome" element={<CoachesHome />} />
+          <Route path="/createteam" element={<CreateTeam />} />
           <Route path="/guardiansregister" element={<GuardiansRegister />} />
           <Route path="/guardianslogin" element={<GuardiansLogin />} />
           <Route path="/teams" element={<TeamList teams={teams} />} />

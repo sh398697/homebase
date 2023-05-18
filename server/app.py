@@ -142,6 +142,23 @@ def get_teams():
     )
   return response
 
+@app.route("/teams", methods=['POST'])
+def create_team():
+  data = request.get_json()
+  team = Team(name=data['name'], image_url=data['image_url'])
+  team_dict = {
+                  "name": team.name,
+                  "image_url": team.image_url
+                  }
+  db.session.add(team)
+  db.session.commit()
+  response = make_response(
+        team_dict,
+        201,
+        {"Content-Type": "application/json"}
+    )
+  return response
+
 
 @app.route("/games", methods=['GET'])
 def get_games():
