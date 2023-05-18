@@ -7,7 +7,6 @@ function Guardians() {
 
     return (
         <div>
-            <Header />
             <div>
                 <h1>Parents/Guardians</h1>
             </div>

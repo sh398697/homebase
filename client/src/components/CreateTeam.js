@@ -35,7 +35,6 @@ function CreateTeam() {
 
     return (
         <div>
-            <Header />
             <div className="create-team-container">
                 <div className="create-team-form-container">
                     <h2>Create Your Team</h2>

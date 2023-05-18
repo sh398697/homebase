@@ -1,10 +1,10 @@
 import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import API_URL from "../apiConfig.js";
-import Header from "./Header.js";
 import "./CoachesRegister.css";
 
 
-function CoachesRegister() {
+function CoachesRegister({coaches, setCoaches}) {
     const [newFirstName, setNewFirstName] = useState("");
     const [newLastName, setNewLastName] = useState("");
     const [newEmail, setNewEmail] = useState("");
@@ -19,9 +19,11 @@ function CoachesRegister() {
     const handleImageURL = (e) => setNewImageURL(e.target.value);
     const handlePassword = (e) => setNewPassword(e.target.value);
 
+    const history = useNavigate();
+
     const onCreateCoach = (coachObj) => {
-    //setUser(coachObj);
-    //history("/coacheslogin");
+        setCoaches([...coaches, coachObj]);
+        history("/coacheslogin");
     };
 
     const handleSubmit = (e) => {
@@ -42,12 +44,12 @@ function CoachesRegister() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newCoach),
         };
-        fetch(`${API_URL}/coaches`, requestOptions).then(onCreateCoach);
+        fetch(`${API_URL}/coaches`, requestOptions)
+        .then(onCreateCoach);
     };
 
     return (
         <div>
-            <Header />
             <div className="create-user-container">
                 <div className="create-user-form-container">
                     <h2>Create Your Account</h2>

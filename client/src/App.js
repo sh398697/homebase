@@ -3,6 +3,7 @@ import {BrowserRouter as Router, Route, Link, Routes, useNavigate } from 'react-
 import Cookies from "js-cookie";
 
 import API_URL from "./apiConfig";
+import Header from "./components/Header";
 import Home from "./components/Home";
 import Account from "./components/Account";
 import CoachesLogin from "./components/CoachesLogin";
@@ -17,6 +18,7 @@ import MessageList from "./components/MessageList";
 
 function App() {
   
+  const [coaches, setCoaches] = useState([]);
   const [loggedInCoach, setloggedInCoach] = useState('');
   const [teams, setTeams] = useState([]);
   const [messages, setMessages] = useState([]);
@@ -90,11 +92,12 @@ function App() {
   return (
     <div className="App">
       <Router>
+        <Header />
         <Routes>
           <Route path="/account" element={<Account />} />
-          <Route path="/coachesregister" element={<CoachesRegister />} />
+          <Route path="/coachesregister" element={<CoachesRegister coaches={coaches} setCoaches={setCoaches} />} />
           <Route path="/coacheslogin" element={<CoachesLogin handleSuccessfulCoachLogin={handleSuccessfulCoachLogin} />} />
-          <Route path="/coacheshome" element={<CoachesHome />} />
+          <Route path="/coacheshome" element={<CoachesHome loggedInCoach={loggedInCoach} setloggedInCoach={setloggedInCoach} />} />
           <Route path="/createteam" element={<CreateTeam />} />
           <Route path="/guardiansregister" element={<GuardiansRegister />} />
           <Route path="/guardianslogin" element={<GuardiansLogin />} />

@@ -1,14 +1,16 @@
 import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 
 import API_URL from "../apiConfig.js";
-import Header from "./Header.js";
 import "./CoachesLogin.css";
 
 function CoachesLogin({ handleSuccessfulCoachLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  const navigate = useNavigate();
 
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
@@ -40,6 +42,7 @@ function CoachesLogin({ handleSuccessfulCoachLogin }) {
         console.log("login successful")
         handleSuccessfulCoachLogin(data);
         // Set the coach object in the context and navigate to home
+        navigate("/coacheshome");
 
       })
       .catch((error) => {
@@ -50,7 +53,6 @@ function CoachesLogin({ handleSuccessfulCoachLogin }) {
 
   return (
     <div>
-      <Header />
       <div className="login-container">
         <form onSubmit={handleLogin} className="login-form">
           <div className="form-group">

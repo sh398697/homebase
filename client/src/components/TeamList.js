@@ -10,7 +10,6 @@ function TeamList({ teams }) {
 
     return (
         <div>
-            <Header />
             <div>{teamObjArray}</div>
         </div>
   );

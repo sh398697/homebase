@@ -267,6 +267,19 @@ def coachlogin():
   response.set_cookie("token", token, expires=expires)
   return response
 
+@app.route('/coacheslogout', methods=['POST'])
+def coacheslogout():
+  
+  response = make_response(
+    {"message": "Successfully logged out"},
+    200,
+    {"Content-Type": "application/json"}
+  )
+  # Set the cookie with an expiration time of 24 hours
+  expires = datetime.now() - timedelta(days=1)
+  response.set_cookie("token", "", expires=expires)
+  return response
+
 
 @app.route('/get-coach-data', methods=['GET'])
 @jwt_required()

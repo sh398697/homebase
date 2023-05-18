@@ -8,7 +8,6 @@ function Account() {
 
     return (
         <div>
-            <Header />
             <div>
                 <div>
                     <h1>Account</h1>

@@ -7,7 +7,6 @@ function GuardiansLogin() {
 
     return (
         <div>
-            <Header />
             <div>
                 <h1>Guardians Register</h1>
             </div>

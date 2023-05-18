@@ -8,7 +8,6 @@ function Home({ loggedInCoach }) {
 
     return (
         <div>
-            <Header />
             <div className="home-container">
                 <div className="home-content">
                     <div>{loggedInCoach ? loggedInCoach.fname : ("Not logged in")}</div>

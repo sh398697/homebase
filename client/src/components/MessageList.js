@@ -10,7 +10,6 @@ function MessageList({ messages }) {
 
     return (
         <div>
-            <Header />
             <div>{messageObjArray}</div>
         </div>
   );
