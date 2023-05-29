@@ -1,5 +1,4 @@
 import React from "react";
-import Header from "./Header";
 import TeamCard from "./TeamCard";
 
 function TeamList({ teams }) {

@@ -45,7 +45,6 @@ def get_coaches():
                   "lname": coach.lname,
                   "email": coach.email,
                   "phone": coach.phone,
-                  "team_id": coach.team_id,
                   "image_url": coach.image_url
                   }
     coaches.append(coach_dict)
@@ -60,15 +59,14 @@ def get_coaches():
 @app.route("/coaches", methods=['POST'])
 def create_coach():
   data = request.get_json()
-  coach = Coach(fname=data['fname'], lname=data['lname'], email=data['email'], phone=data['phone'], image_url=data['image_url'], password=data['password'], team_id=data['team_id'])
+  coach = Coach(fname=data['fname'], lname=data['lname'], email=data['email'], phone=data['phone'], image_url=data['image_url'], password=data['password'])
   coach_dict = {
                   "fname": coach.fname,
                   "lname": coach.lname,
                   "email": coach.email,
                   "phone": coach.phone,
                   "password": coach.password_hash,
-                  "image_url": coach.image_url,
-                  "team_id": coach.team_id
+                  "image_url": coach.image_url
                   }
   db.session.add(coach)
   db.session.commit()
@@ -131,7 +129,8 @@ def get_teams():
     team_dict = {
                   "id": team.id,
                   "name": team.name,
-                  "image_url": team.image_url
+                  "image_url": team.image_url,
+                  "coach_id": team.coach_id
                   }
     teams.append(team_dict)
   
@@ -142,13 +141,30 @@ def get_teams():
     )
   return response
 
+@app.route("/teams/<int:team_id>", methods=['GET'])
+def get_team(team_id):
+  team = Team.query.filter_by(id=team_id).first()
+  team_dict = {
+                  "id": team.id,
+                  "name": team.name,
+                  "image_url": team.image_url,
+                  "coach_id": team.coach_id
+                  }
+  response = make_response(
+        team_dict,
+        200,
+        {"Content-Type": "application/json"}
+    )
+  return response
+
 @app.route("/teams", methods=['POST'])
 def create_team():
   data = request.get_json()
-  team = Team(name=data['name'], image_url=data['image_url'])
+  team = Team(name=data['name'], image_url=data['image_url'], coach_id=data['coach_id'])
   team_dict = {
                   "name": team.name,
-                  "image_url": team.image_url
+                  "image_url": team.image_url,
+                  "coach_id": team.coach_id
                   }
   db.session.add(team)
   db.session.commit()
@@ -169,6 +185,7 @@ def get_games():
                   "home_team_id": game.home_team_id,
                   "away_team_id": game.away_team_id,
                   "status": game.status,
+                  "location": game.location,
                   "home_team_runs": game.home_team_runs,
                   "away_team_runs": game.away_team_runs,
                   "game_result": game.game_result
@@ -178,6 +195,28 @@ def get_games():
   response = make_response(
         games,
         200,
+        {"Content-Type": "application/json"}
+    )
+  return response
+
+@app.route("/games", methods=['POST'])
+def create_game():
+  data = request.get_json()
+  game = Game(home_team_id=data['home_team_id'], away_team_id=data['away_team_id'], status=data['status'], home_team_runs=data['home_team_runs'], away_team_runs=data['away_team_runs'], game_result=data['game_result'], location=data['location'])
+  game_dict = {
+                  "home_team_id": game.home_team_id,
+                  "away_team_id": game.away_team_id,
+                  "status": game.status,
+                  "location": game.location,
+                  "home_team_runs": game.home_team_runs,
+                  "away_team_runs": game.away_team_runs,
+                  "game_result": game.game_result
+                  }
+  db.session.add(game)
+  db.session.commit()
+  response = make_response(
+        game_dict,
+        201,
         {"Content-Type": "application/json"}
     )
   return response

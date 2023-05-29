@@ -1,27 +1,25 @@
 import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import API_URL from "../apiConfig.js";
-import Header from "./Header.js";
 import "./CreateTeam.css";
 
 
-function CreateTeam() {
+function CreateTeam({ loggedInCoach, addTeam}) {
     const [newTeamName, setNewTeamName] = useState("");
     const [newImageURL, setNewImageURL] = useState("");
 
     const handleTeamName = (e) => setNewTeamName(e.target.value);
     const handleImageURL = (e) => setNewImageURL(e.target.value);
 
-    const onCreateTeam = (teamObj) => {
-    //setUser(coachObj);
-    //history("/coacheslogin");
-    };
+    const navigate = useNavigate();
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
         const newTeam = {
-        name: newTeamName,
-        image_url: newImageURL
+            name: newTeamName,
+            image_url: newImageURL,
+            coach_id: loggedInCoach.id,
         };
 
         const requestOptions = {
@@ -29,7 +27,11 @@ function CreateTeam() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newTeam),
         };
-        fetch(`${API_URL}/teams`, requestOptions).then(onCreateTeam);
+        fetch(`${API_URL}/teams`, requestOptions)
+        .then(
+            addTeam(newTeam),
+            navigate("/coacheshome")
+        );
     };
 
 

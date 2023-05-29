@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import API_URL from "../apiConfig.js";
 
-function CoachesHome({ loggedInCoach, setloggedInCoach }) {
+function CoachesHome({ loggedInCoach, setLoggedInCoach }) {
 
     const navigate = useNavigate();
 
@@ -21,9 +21,9 @@ function CoachesHome({ loggedInCoach, setloggedInCoach }) {
           .then((data) => {
             Cookies.set("token", data.token, { expires: 1 });
             console.log("logout successful")
-            setloggedInCoach('');
+            setLoggedInCoach('');
             // Set the coach object in the context and navigate to home
-            navigate("/coacheshome");
+            navigate("/");
     
           })
       }

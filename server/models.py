@@ -14,15 +14,15 @@ class Coach(db.Model):
     phone = db.Column(db.String(100))
     image_url = db.Column(db.String(300))
     password_hash = db.Column(db.String(128))
-    team_id = db.Column(db.Integer, db.ForeignKey('team.id'))
     
-    def __init__(self, fname, lname, email, phone, password, image_url, team_id):
+    team = db.relationship('Team', back_populates='coach')
+    
+    def __init__(self, fname, lname, email, phone, password, image_url):
         self.fname = fname
         self.lname = lname
         self.email = email
         self.phone = phone
         self.image_url = image_url
-        self.team_id = team_id
         self.password_hash = generate_password_hash(password)
         
     def set_password(self, password):
@@ -109,6 +109,9 @@ class Team(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     image_url = db.Column(db.String(300))
+    coach_id = db.Column(db.Integer, db.ForeignKey('coach.id'), nullable=False)
+    
+    coach = db.relationship('Coach', back_populates='team')
     
     home_games = db.relationship('Game', foreign_keys='Game.home_team_id', backref='home_team', lazy=True)
     away_games = db.relationship('Game', foreign_keys='Game.away_team_id', backref='away_team', lazy=True)

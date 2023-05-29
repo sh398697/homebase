@@ -13,16 +13,21 @@ import CreateTeam from "./components/CreateTeam";
 import GuardiansLogin from "./components/GuardiansLogin";
 import GuardiansRegister from "./components/GuardiansRegister";
 import TeamList from "./components/TeamList";
+import TeamDetails from "./components/TeamDetails";
 import MessageList from "./components/MessageList";
 
 
 function App() {
   
   const [coaches, setCoaches] = useState([]);
-  const [loggedInCoach, setloggedInCoach] = useState('');
+  const [loggedInCoach, setLoggedInCoach] = useState('');
   const [teams, setTeams] = useState([]);
   const [messages, setMessages] = useState([]);
 
+
+  const addTeam = (newTeamObj) => {
+    setTeams([...teams, newTeamObj]);
+}
   const handleSuccessfulCoachLogin = () => {
     const token = Cookies.get("token");
     if (token) {
@@ -42,7 +47,7 @@ function App() {
           console.log("Use Effect Token called")
           console.log(data);
           const newLoggedInCoach = ({ id: data.id, email: data.email, fname: data.fname, lname: data.lname, phone: data.phone, image_url: data.image_url, team_id: data.team_id });
-          setloggedInCoach(newLoggedInCoach);
+          setLoggedInCoach(newLoggedInCoach);
         })
         .catch((error) => {
           console.error("Error:", error);
@@ -69,7 +74,7 @@ function App() {
           console.log("Use Effect Token called")
           console.log(data);
           const newLoggedInCoach = ({ id: data.id, email: data.email, fname: data.fname, lname: data.lname, phone: data.phone, image_url: data.image_url, team_id: data.team_id });
-          (setloggedInCoach(newLoggedInCoach));
+          (setLoggedInCoach(newLoggedInCoach));
         })
         .catch((error) => {
           console.error("Error:", error);
@@ -97,8 +102,9 @@ function App() {
           <Route path="/account" element={<Account />} />
           <Route path="/coachesregister" element={<CoachesRegister coaches={coaches} setCoaches={setCoaches} />} />
           <Route path="/coacheslogin" element={<CoachesLogin handleSuccessfulCoachLogin={handleSuccessfulCoachLogin} />} />
-          <Route path="/coacheshome" element={<CoachesHome loggedInCoach={loggedInCoach} setloggedInCoach={setloggedInCoach} />} />
-          <Route path="/createteam" element={<CreateTeam />} />
+          <Route path="/coacheshome" element={<CoachesHome loggedInCoach={loggedInCoach} setLoggedInCoach={setLoggedInCoach} />} />
+          <Route path="/createteam" element={<CreateTeam loggedInCoach={loggedInCoach} addTeam={addTeam} />} />
+          <Route path="/teamdetails" element={<TeamDetails />} />
           <Route path="/guardiansregister" element={<GuardiansRegister />} />
           <Route path="/guardianslogin" element={<GuardiansLogin />} />
           <Route path="/teams" element={<TeamList teams={teams} />} />
