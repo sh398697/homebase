@@ -3,10 +3,10 @@ from flask import Flask, request, make_response, session, jsonify
 from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData, DateTime
+from sqlalchemy import MetaData, DateTime, Date
 from datetime import date, datetime, timedelta
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
-from models import db, Coach, Player, Guardian, PlayerGuardian, Team, Game, PlayerGameAvailability, Message
+from models import db, Coach, Player, Guardian, PlayerGuardian, Team, Game, Message
 
 # Instantiate app, set attributes
 app = Flask(__name__)
@@ -175,13 +175,13 @@ def create_team():
     )
   return response
 
-
 @app.route("/games", methods=['GET'])
 def get_games():
   games = []
   for game in Game.query.all():
     game_dict = {
                   "id": game.id,
+                  "date": datetime.strftime(game.date, '%Y-%m-%d'),
                   "home_team_id": game.home_team_id,
                   "away_team_id": game.away_team_id,
                   "status": game.status,
@@ -202,8 +202,15 @@ def get_games():
 @app.route("/games", methods=['POST'])
 def create_game():
   data = request.get_json()
-  game = Game(home_team_id=data['home_team_id'], away_team_id=data['away_team_id'], status=data['status'], home_team_runs=data['home_team_runs'], away_team_runs=data['away_team_runs'], game_result=data['game_result'], location=data['location'])
+  gameDateTime = data['date']
+
+  format = '%Y-%m-%d'
+  # convert from string format to datetime format
+  newGameDateTime = datetime.strptime(gameDateTime, format).date()
+  
+  game = Game(date=newGameDateTime, home_team_id=data['home_team_id'], away_team_id=data['away_team_id'], status='scheduled', home_team_runs='', away_team_runs='', game_result='pending', location=data['location'])
   game_dict = {
+                  "date": game.date,
                   "home_team_id": game.home_team_id,
                   "away_team_id": game.away_team_id,
                   "status": game.status,
@@ -217,6 +224,57 @@ def create_game():
   response = make_response(
         game_dict,
         201,
+        {"Content-Type": "application/json"}
+    )
+  return response
+
+@app.route("/games/<int:id>", methods=['PATCH'])
+def update_game(id):
+  data = request.get_json()
+  gameDateTime = data['date']
+
+  format = '%Y-%m-%d'
+  # convert from string format to datetime format
+  newGameDateTime = datetime.strptime(gameDateTime, format).date()
+  
+  game = Game.query.get(id)
+  game.date = newGameDateTime
+  game.home_team_id = data['home_team_id']
+  game.away_team_id = data['away_team_id']
+  game.location = data['location']
+  game.status = data['status']
+  game.home_team_runs = data['home_team_runs']
+  game.away_team_runs = data['away_team_runs']
+  game.game_result = data['game_result']
+  
+  game_dict = {
+        'location': game.location,
+        'date': game.date,
+        'status': game.status,
+        'home_team_id': game.home_team_id,
+        'away_team_id': game.away_team_id,
+        'home_team_runs': game.home_team_runs,
+        'away_team_runs': game.away_team_runs,
+        'game_result': game.game_result
+  }
+
+  db.session.add(game)
+  db.session.commit()
+  response = make_response(
+        game_dict,
+        200,
+        {"Content-Type": "application/json"}
+    )
+  return response
+
+@app.route("/games/<int:id>", methods=['DELETE'])
+def delete_game(id):
+  game = Game.query.get(id)
+  db.session.delete(game)
+  db.session.commit()
+  response = make_response(
+        "Game deleted",
+        200,
         {"Content-Type": "application/json"}
     )
   return response
@@ -263,27 +321,6 @@ def get_playerguardians():
   return response
 
 
-@app.route("/playeravailability", methods=['GET'])
-def get_playeravailability():
-  playergameavailability = []
-  for playergameavailability in PlayerGameAvailability.query.all():
-    playergameavailability_dict = {
-                  "id": playergameavailability.id,
-                  "player_id": playergameavailability.player_id,
-                  "game_id": playergameavailability.game_id,
-                  "status": playergameavailability.status
-                  }
-    playergameavailability.append(playergameavailability_dict)
-    
-  response = make_response(
-    playergameavailability,
-    200,
-    {"Content-Type": "application/json"}
-  )
-  return response
-
-
-
 @app.route('/coachlogin', methods=['POST'])
 def coachlogin():
   email = request.json.get('email')
@@ -303,7 +340,7 @@ def coachlogin():
   )
   # Set the cookie with an expiration time of 24 hours
   expires = datetime.now() + timedelta(days=1)
-  response.set_cookie("token", token, expires=expires)
+  response.set_cookie("token", token, expires=datetime.utcnow() + timedelta(days=1))
   return response
 
 @app.route('/coacheslogout', methods=['POST'])

@@ -1,6 +1,6 @@
 from flask import Flask
-from datetime import datetime, timedelta
-from models import db, Team, Coach, Player, Guardian, Message, PlayerGameAvailability, PlayerGuardian, Game
+from datetime import date, datetime, timedelta
+from models import db, Team, Coach, Player, Guardian, Message, PlayerGuardian, Game
 from app import app
 
 if __name__ == '__main__':
@@ -9,7 +9,6 @@ if __name__ == '__main__':
         print("Starting seed...")
 
         # Delete existing records
-        PlayerGameAvailability.query.delete()
         PlayerGuardian.query.delete()
         Team.query.delete()
         Coach.query.delete()
@@ -65,9 +64,9 @@ if __name__ == '__main__':
         db.session.commit()
         
         # Create games
-        game1 = Game(date=(datetime.now() + timedelta(days=7)), home_team_id=1, away_team_id=2, location="Meadowlands Field 2", status="scheduled", home_team_runs='', away_team_runs='', game_result="pending")
+        game1 = Game(date=(datetime.today() + timedelta(days=7)), home_team_id=1, away_team_id=2, location="Meadowlands Field 2", status="scheduled", home_team_runs='', away_team_runs='', game_result="pending")
         
-        game2 = Game(date=(datetime.now() + timedelta(days=14)), home_team_id=2, away_team_id=1, location="MapleCrest Park", status="scheduled", home_team_runs='', away_team_runs='', game_result="pending")
+        game2 = Game(date=(datetime.today() + timedelta(days=14)), home_team_id=2, away_team_id=1, location="MapleCrest Park", status="scheduled", home_team_runs='', away_team_runs='', game_result="pending")
         
         db.session.add(game1)
         db.session.add(game2)

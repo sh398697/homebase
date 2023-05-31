@@ -27,13 +27,13 @@ function CoachesHome({ loggedInCoach, setLoggedInCoach }) {
     
           })
       }
-
+    
     return (
         <div>
             <div>
                 <h1>Coaches Home</h1>
                 <br />
-                <div>My Team</div>
+                <div><NavLink to="/myteam">My Team</NavLink></div>
                 <br />
                 <div>Update Team</div>
                 <br />

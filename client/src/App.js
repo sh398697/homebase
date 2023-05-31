@@ -10,6 +10,9 @@ import CoachesLogin from "./components/CoachesLogin";
 import CoachesRegister from "./components/CoachesRegister";
 import CoachesHome from "./components/CoachesHome";
 import CreateTeam from "./components/CreateTeam";
+import MyTeamGames from "./components/MyTeamGames";
+import AddGame from "./components/AddGame";
+import UpdateGame from "./components/UpdateGame";
 import GuardiansLogin from "./components/GuardiansLogin";
 import GuardiansRegister from "./components/GuardiansRegister";
 import TeamList from "./components/TeamList";
@@ -22,12 +25,17 @@ function App() {
   const [coaches, setCoaches] = useState([]);
   const [loggedInCoach, setLoggedInCoach] = useState('');
   const [teams, setTeams] = useState([]);
+  const [games, setGames] = useState([]);
   const [messages, setMessages] = useState([]);
-
 
   const addTeam = (newTeamObj) => {
     setTeams([...teams, newTeamObj]);
-}
+  }
+
+  const addGame = (newGameObj) => {
+    setGames([...games, newGameObj]);
+  }
+
   const handleSuccessfulCoachLogin = () => {
     const token = Cookies.get("token");
     if (token) {
@@ -89,6 +97,12 @@ function App() {
   }, []);
 
   useEffect(() => {
+    fetch(`${API_URL}/games`)
+        .then((r) => r.json())
+        .then(setGames);
+}, []);
+
+  useEffect(() => {
     fetch(`${API_URL}/messages`)
         .then((r) => r.json())
         .then(setMessages);
@@ -104,7 +118,10 @@ function App() {
           <Route path="/coacheslogin" element={<CoachesLogin handleSuccessfulCoachLogin={handleSuccessfulCoachLogin} />} />
           <Route path="/coacheshome" element={<CoachesHome loggedInCoach={loggedInCoach} setLoggedInCoach={setLoggedInCoach} />} />
           <Route path="/createteam" element={<CreateTeam loggedInCoach={loggedInCoach} addTeam={addTeam} />} />
-          <Route path="/teamdetails" element={<TeamDetails />} />
+          <Route path="/myteam" element={<TeamDetails loggedInCoach={loggedInCoach} teams={teams} />} />
+          <Route path="/myteamgames" element={<MyTeamGames loggedInCoach={loggedInCoach} teams={teams} games={games} />} />
+          <Route path="/addgame" element={<AddGame addGame={addGame} />} />
+          <Route path="/updategame/:game_id" element={<UpdateGame games={games} />} />
           <Route path="/guardiansregister" element={<GuardiansRegister />} />
           <Route path="/guardianslogin" element={<GuardiansLogin />} />
           <Route path="/teams" element={<TeamList teams={teams} />} />

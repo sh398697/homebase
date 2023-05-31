@@ -44,8 +44,6 @@ class Player(db.Model):
     team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False)
     
     guardians = db.relationship('Guardian', secondary='player_guardian', backref='player')
-    game_availability = db.relationship('PlayerGameAvailability', back_populates='player')
-
 
 class Guardian(db.Model):
     __tablename__ = 'guardian'
@@ -79,7 +77,7 @@ class Game(db.Model):
     __tablename__ = 'game'
 
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.DateTime, nullable=False)
+    date = db.Column(db.Date, nullable=False)
     home_team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False)
     away_team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False)
     location = db.Column(db.String(100), nullable=False)
@@ -87,21 +85,6 @@ class Game(db.Model):
     home_team_runs = db.Column(db.Integer, nullable=False)
     away_team_runs = db.Column(db.Integer, nullable=False)
     game_result = db.Column(db.String(100))
-    
-    player_availability = db.relationship('PlayerGameAvailability', back_populates='game')
-
-
-class PlayerGameAvailability(db.Model):
-    __tablename__ = 'player_game_availability'
-
-    id = db.Column(db.Integer, primary_key=True)
-    player_id = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=False)
-    game_id = db.Column(db.Integer, db.ForeignKey('game.id'), nullable=False)
-    status = db.Column(db.String(50), nullable=False)
-
-    game = db.relationship('Game', back_populates='player_availability')
-    player = db.relationship('Player', back_populates='game_availability')
-
 
 class Team(db.Model):
     __tablename__ = 'team'
