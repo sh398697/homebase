@@ -38,15 +38,15 @@ class Player(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     fname = db.Column(db.String(100), nullable=False)
     lname = db.Column(db.String(100))
-    date_of_birth = db.Column(db.Date)
+    age = db.Column(db.Integer)
     number = db.Column(db.String(100))
     image_url = db.Column(db.String(300))
     team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False)
     
-    guardians = db.relationship('Guardian', secondary='player_guardian', backref='player')
+    parents = db.relationship('Parent', secondary='player_parent', backref='player')
 
-class Guardian(db.Model):
-    __tablename__ = 'guardian'
+class Parent(db.Model):
+    __tablename__ = 'parent'
     
     id = db.Column(db.Integer, primary_key=True)
     fname = db.Column(db.String(100), nullable=False)
@@ -56,8 +56,16 @@ class Guardian(db.Model):
     image_url = db.Column(db.String(300))
     password_hash = db.Column(db.String(128))
     
-    players = db.relationship('Player', secondary='player_guardian', backref='guardian')
+    players = db.relationship('Player', secondary='player_parent', backref='parent')
     
+    def __init__(self, fname, lname, email, phone, password, image_url):
+        self.fname = fname
+        self.lname = lname
+        self.email = email
+        self.phone = phone
+        self.image_url = image_url
+        self.password_hash = generate_password_hash(password)
+        
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
     
@@ -65,12 +73,12 @@ class Guardian(db.Model):
         return check_password_hash(self.password_hash, password)
 
 
-class PlayerGuardian(db.Model):
-    __tablename__ = 'player_guardian'
+class PlayerParent(db.Model):
+    __tablename__ = 'player_parent'
     
     id = db.Column(db.Integer, primary_key=True)
     player_id = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=False)
-    guardian_id = db.Column(db.Integer, db.ForeignKey('guardian.id'), nullable=False)
+    parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'), nullable=False)
     relationship_type = db.Column(db.String(100))
 
 class Game(db.Model):
@@ -84,7 +92,6 @@ class Game(db.Model):
     status = db.Column(db.String(50), nullable=False, server_default='scheduled')
     home_team_runs = db.Column(db.Integer, nullable=False)
     away_team_runs = db.Column(db.Integer, nullable=False)
-    game_result = db.Column(db.String(100))
 
 class Team(db.Model):
     __tablename__ = 'team'
@@ -99,14 +106,3 @@ class Team(db.Model):
     home_games = db.relationship('Game', foreign_keys='Game.home_team_id', backref='home_team', lazy=True)
     away_games = db.relationship('Game', foreign_keys='Game.away_team_id', backref='away_team', lazy=True)
     team_players = db.relationship('Player', backref='team', foreign_keys=[Player.team_id])
-
-
-class Message(db.Model):
-    __tablename__ = 'message'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=False)
-    author_coach_id = db.Column(db.Integer, db.ForeignKey('coach.id'))
-    author_guardian_id = db.Column(db.Integer, db.ForeignKey('guardian.id'))

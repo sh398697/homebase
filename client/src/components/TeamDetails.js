@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 
 function TeamDetails({ loggedInCoach, teams }) {
 
-    const myTeamArray = teams.filter(team => team.coach_id === loggedInCoach.id);
+    const myTeamArray = teams.filter(team => team.coach_id == loggedInCoach.id);
     const team = myTeamArray[0];
 
     return (

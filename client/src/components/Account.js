@@ -16,9 +16,9 @@ function Account() {
                     <br />
                     <div><NavLink to="/coachesregister">Coaches Register</NavLink></div>
                     <br />
-                    <div><NavLink to="/guardianslogin">Parent/Guardian Login</NavLink></div>
+                    <div><NavLink to="/familylogin">Parent/Guardian Login</NavLink></div>
                     <br />
-                    <div><NavLink to="/guardianslogin">Parent/Guardian Register</NavLink></div>
+                    <div><NavLink to="/familyregister">Parent/Guardian Register</NavLink></div>
                 </div>
             </div>
         </div>

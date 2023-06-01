@@ -3,8 +3,9 @@ import { NavLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import API_URL from "../apiConfig.js";
+import TeamDetails from "./TeamDetails";
 
-function CoachesHome({ loggedInCoach, setLoggedInCoach }) {
+function CoachesHome({ loggedInCoach, setLoggedInCoach, teams }) {
 
     const navigate = useNavigate();
 
@@ -33,9 +34,9 @@ function CoachesHome({ loggedInCoach, setLoggedInCoach }) {
             <div>
                 <h1>Coaches Home</h1>
                 <br />
-                <div><NavLink to="/myteam">My Team</NavLink></div>
-                <br />
-                <div>Update Team</div>
+                <div>
+                  <TeamDetails loggedInCoach={loggedInCoach} teams={teams} />
+                </div>
                 <br />
                 <div><NavLink to="/createteam">Create New Team</NavLink></div>
                 <br />

@@ -6,7 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData, DateTime, Date
 from datetime import date, datetime, timedelta
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
-from models import db, Coach, Player, Guardian, PlayerGuardian, Team, Game, Message
+from models import db, Coach, Player, Parent, PlayerParent, Team, Game
 
 # Instantiate app, set attributes
 app = Flask(__name__)
@@ -99,24 +99,72 @@ def get_players():
     )
   return response
 
+@app.route("/players", methods=['POST'])
+def create_player():
+  data = request.get_json()
+  player = Player(fname=data['fname'], lname=data['lname'], number=data['number'], team_id=data['team_id'], image_url=data['image_url'])
+  db.session.add(player)
+  db.session.commit()
 
-@app.route("/guardians", methods=['GET'])
-def get_guardians():
-  guardians = []
-  for guardian in Guardian.query.all():
-    guardian_dict = {
-                  "id": guardian.id,
-                  "fname": guardian.fname,
-                  "lname": guardian.lname,
-                  "email": guardian.email,
-                  "phone": guardian.phone,
-                  "image_url": guardian.image_url
-                  }
-    guardians.append(guardian_dict)
+  player_id = player.id
+
+  player_dict = {
+                  "id": player_id,
+                  "fname": player.fname,
+                  "lname": player.lname,
+                  "age": player.age,
+                  "number": player.number,
+                  "image_url": player.image_url,
+                  "team_id": player.team_id
+                }
   
   response = make_response(
-        guardians,
+        jsonify(player_dict),
+        201,
+        {"Content-Type": "application/json"}
+    )
+  return response
+
+
+
+@app.route("/parents", methods=['GET'])
+def get_parents():
+  parents = []
+  for parent in Parent.query.all():
+    parent_dict = {
+                  "id": parent.id,
+                  "fname": parent.fname,
+                  "lname": parent.lname,
+                  "email": parent.email,
+                  "phone": parent.phone,
+                  "image_url": parent.image_url
+                  }
+    parents.append(parent_dict)
+  
+  response = make_response(
+        parents,
         200,
+        {"Content-Type": "application/json"}
+    )
+  return response
+
+@app.route("/parents", methods=['POST'])
+def create_parent():
+  data = request.get_json()
+  parent = Parent(fname=data['fname'], lname=data['lname'], email=data['email'], phone=data['phone'], image_url=data['image_url'], password=data['password'])
+  parent_dict = {
+                  "fname": parent.fname,
+                  "lname": parent.lname,
+                  "email": parent.email,
+                  "phone": parent.phone,
+                  "password": parent.password_hash,
+                  "image_url": parent.image_url
+                  }
+  db.session.add(parent)
+  db.session.commit()
+  response = make_response(
+        parent_dict,
+        201,
         {"Content-Type": "application/json"}
     )
   return response
@@ -187,8 +235,7 @@ def get_games():
                   "status": game.status,
                   "location": game.location,
                   "home_team_runs": game.home_team_runs,
-                  "away_team_runs": game.away_team_runs,
-                  "game_result": game.game_result
+                  "away_team_runs": game.away_team_runs
                   }
     games.append(game_dict)
   
@@ -208,7 +255,7 @@ def create_game():
   # convert from string format to datetime format
   newGameDateTime = datetime.strptime(gameDateTime, format).date()
   
-  game = Game(date=newGameDateTime, home_team_id=data['home_team_id'], away_team_id=data['away_team_id'], status='scheduled', home_team_runs='', away_team_runs='', game_result='pending', location=data['location'])
+  game = Game(date=newGameDateTime, home_team_id=data['home_team_id'], away_team_id=data['away_team_id'], status='scheduled', home_team_runs='', away_team_runs='', location=data['location'])
   game_dict = {
                   "date": game.date,
                   "home_team_id": game.home_team_id,
@@ -216,8 +263,7 @@ def create_game():
                   "status": game.status,
                   "location": game.location,
                   "home_team_runs": game.home_team_runs,
-                  "away_team_runs": game.away_team_runs,
-                  "game_result": game.game_result
+                  "away_team_runs": game.away_team_runs
                   }
   db.session.add(game)
   db.session.commit()
@@ -245,7 +291,6 @@ def update_game(id):
   game.status = data['status']
   game.home_team_runs = data['home_team_runs']
   game.away_team_runs = data['away_team_runs']
-  game.game_result = data['game_result']
   
   game_dict = {
         'location': game.location,
@@ -254,8 +299,7 @@ def update_game(id):
         'home_team_id': game.home_team_id,
         'away_team_id': game.away_team_id,
         'home_team_runs': game.home_team_runs,
-        'away_team_runs': game.away_team_runs,
-        'game_result': game.game_result
+        'away_team_runs': game.away_team_runs
   }
 
   db.session.add(game)
@@ -280,42 +324,37 @@ def delete_game(id):
   return response
 
 
-@app.route("/messages", methods=['GET'])
-def get_messages():
-  messages = []
-  for message in Message.query.all():
-    message_dict = {
-                  "id": message.id,
-                  "content": message.content,
-                  "team_id": message.team_id,
-                  "author_coach_id": message.author_coach_id,
-                  "author_guardian_id": message.author_guardian_id,
-                  "timestamp": message.timestamp
+@app.route("/playerparents", methods=['GET'])
+def get_playerparents():
+  playerparents = []
+  for playerparent in PlayerParent.query.all():
+    playerparent_dict = {
+                  "id": playerparent.id,
+                  "player_id": playerparent.player_id,
+                  "parent_id": playerparent.parent_id
                   }
-    messages.append(message_dict)
+    playerparents.append(playerparent_dict)
   
   response = make_response(
-        messages,
+        playerparents,
         200,
         {"Content-Type": "application/json"}
     )
   return response
 
-
-@app.route("/playerguardians", methods=['GET'])
-def get_playerguardians():
-  playerguardians = []
-  for playerguardian in PlayerGuardian.query.all():
-    playerguardian_dict = {
-                  "id": playerguardian.id,
-                  "player_id": playerguardian.player_id,
-                  "guardian_id": playerguardian.guardian_id
+@app.route("/playerparents", methods=['POST'])
+def create_playerparent():
+  data = request.get_json()
+  playerparent = PlayerParent(player_id=data['player_id'], parent_id=data['parent_id'])
+  playerparent_dict = {
+                  "player_id": playerparent.player_id,
+                  "parent_id": playerparent.parent_id
                   }
-    playerguardians.append(playerguardian_dict)
-  
+  db.session.add(playerparent)
+  db.session.commit()
   response = make_response(
-        playerguardians,
-        200,
+        playerparent_dict,
+        201,
         {"Content-Type": "application/json"}
     )
   return response
@@ -343,6 +382,28 @@ def coachlogin():
   response.set_cookie("token", token, expires=datetime.utcnow() + timedelta(days=1))
   return response
 
+@app.route('/parentlogin', methods=['POST'])
+def parentlogin():
+  email = request.json.get('email')
+  password = request.json.get('password')
+  parent = Parent.query.filter_by(email=email).first()
+  if not parent or not parent.check_password(password):
+    return make_response(
+      {"error": "Invalid email or password"},
+      401,
+      {"Content-Type": "application/json"}
+    )
+  token = create_access_token(identity=parent.id)
+  response = make_response(
+  {"parent_token": token},
+  200,
+  {"Content-Type": "application/json"}
+  )
+  # Set the cookie with an expiration time of 24 hours
+  expires = datetime.now() + timedelta(days=1)
+  response.set_cookie("parent_token", token, expires=datetime.utcnow() + timedelta(days=1))
+  return response
+
 @app.route('/coacheslogout', methods=['POST'])
 def coacheslogout():
   
@@ -354,6 +415,19 @@ def coacheslogout():
   # Set the cookie with an expiration time of 24 hours
   expires = datetime.now() - timedelta(days=1)
   response.set_cookie("token", "", expires=expires)
+  return response
+
+@app.route('/parentlogout', methods=['POST'])
+def parentlogout():
+  
+  response = make_response(
+    {"message": "Successfully logged out"},
+    200,
+    {"Content-Type": "application/json"}
+  )
+  # Set the cookie with an expiration time of 24 hours
+  expires = datetime.now() - timedelta(days=1)
+  response.set_cookie("parent_token", "", expires=expires)
   return response
 
 
@@ -374,6 +448,35 @@ def get_coach_data():
         }
         response = make_response(
             coach_dict,
+            200,
+            {"Content-Type": "application/json"}
+        )
+    else:
+        response = make_response(
+            {"error": "User not found"},
+            404,
+            {"Content-Type": "application/json"}
+        )
+
+    return response
+  
+@app.route('/get-parent-data', methods=['GET'])
+@jwt_required()
+def get_parent_data():
+    parent_id = get_jwt_identity()
+    parent = Parent.query.get(parent_id)
+
+    if parent:
+        parent_dict = {
+            "id": parent.id,
+            "fname": parent.fname,
+            "lname": parent.lname,
+            "email": parent.email,
+            "phone": parent.phone,
+            "image_url": parent.image_url
+        }
+        response = make_response(
+            parent_dict,
             200,
             {"Content-Type": "application/json"}
         )
