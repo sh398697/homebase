@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from "react";
 import {BrowserRouter as Router, Route, Link, Routes, useNavigate } from 'react-router-dom';
 import Cookies from "js-cookie";
+import { CoachProvider } from "./context/coach";
 
 import API_URL from "./apiConfig";
 import Header from "./components/Header";
@@ -32,6 +33,7 @@ function App() {
   const [playerparents, setPlayerParents] = useState([]);
   const [teams, setTeams] = useState([]);
   const [games, setGames] = useState([]);
+  const [testString, setTestString] = useState("scott");
 
   const addTeam = (newTeamObj) => {
     setTeams([...teams, newTeamObj]);
@@ -189,29 +191,32 @@ function App() {
         .then(setGames);
 }, []);
 
+
   return (
     <div className="App">
-      <Router>
-        <Header />
-        <Routes>
-          <Route path="/account" element={<Account />} />
-          <Route path="/coachesregister" element={<CoachesRegister coaches={coaches} setCoaches={setCoaches} />} />
-          <Route path="/coacheslogin" element={<CoachesLogin handleSuccessfulCoachLogin={handleSuccessfulCoachLogin} />} />
-          <Route path="/coacheshome" element={<CoachesHome teams={teams} loggedInCoach={loggedInCoach} setLoggedInCoach={setLoggedInCoach} />} />
-          <Route path="/createteam" element={<CreateTeam loggedInCoach={loggedInCoach} addTeam={addTeam} />} />
-          <Route path="/myteam" element={<TeamDetails loggedInCoach={loggedInCoach} teams={teams} />} />
-          <Route path="/myteamgames" element={<MyTeamGames loggedInCoach={loggedInCoach} teams={teams} games={games} />} />
-          <Route path="/teamschedule/:team_id" element={<TeamSchedule teams={teams} coaches={coaches} games={games}/>} />
-          <Route path="/addgame" element={<AddGame addGame={addGame} />} />
-          <Route path="/updategame/:game_id" element={<UpdateGame games={games} />} />
-          <Route path="/familyregister" element={<FamilyRegister parents={parents} setParents={setParents} />} />
-          <Route path="/familylogin" element={<FamilyLogin handleSuccessfulParentLogin={handleSuccessfulParentLogin} />} />
-          <Route path="/familyhome" element={<FamilyHome loggedInParent={loggedInParent} setLoggedInParent={setLoggedInParent} parents={parents} players={players} playerparents={playerparents} teams={teams} games={games} />} />
-          <Route path="/registerplayer" element={<RegisterPlayer loggedInParent={loggedInParent} addPlayer={addPlayer} />} />
-          <Route path="/teams" element={<TeamList teams={teams} />} />
-          <Route path="/" element={<Home loggedInCoach={loggedInCoach} loggedInParent={loggedInParent}/>} />
-        </Routes>
-      </Router>
+      <CoachProvider>
+        <Router>
+          <Header />
+          <Routes>
+            <Route path="/account" element={<Account />} />
+            <Route path="/coachesregister" element={<CoachesRegister coaches={coaches} setCoaches={setCoaches} />} />
+            <Route path="/coacheslogin" element={<CoachesLogin handleSuccessfulCoachLogin={handleSuccessfulCoachLogin} />} />
+            <Route path="/coacheshome" element={<CoachesHome teams={teams} loggedInCoach={loggedInCoach} setLoggedInCoach={setLoggedInCoach} />} />
+            <Route path="/createteam" element={<CreateTeam loggedInCoach={loggedInCoach} addTeam={addTeam} />} />
+            <Route path="/myteam" element={<TeamDetails loggedInCoach={loggedInCoach} teams={teams} />} />
+            <Route path="/myteamgames" element={<MyTeamGames loggedInCoach={loggedInCoach} teams={teams} games={games} />} />
+            <Route path="/teamschedule/:team_id" element={<TeamSchedule teams={teams} coaches={coaches} games={games}/>} />
+            <Route path="/addgame" element={<AddGame addGame={addGame} />} />
+            <Route path="/updategame/:game_id" element={<UpdateGame games={games} />} />
+            <Route path="/familyregister" element={<FamilyRegister parents={parents} setParents={setParents} />} />
+            <Route path="/familylogin" element={<FamilyLogin handleSuccessfulParentLogin={handleSuccessfulParentLogin} />} />
+            <Route path="/familyhome" element={<FamilyHome loggedInParent={loggedInParent} setLoggedInParent={setLoggedInParent} parents={parents} players={players} playerparents={playerparents} teams={teams} games={games} />} />
+            <Route path="/registerplayer" element={<RegisterPlayer loggedInParent={loggedInParent} addPlayer={addPlayer} />} />
+            <Route path="/teams" element={<TeamList teams={teams} />} />
+            <Route path="/" element={<Home loggedInCoach={loggedInCoach} loggedInParent={loggedInParent}/>} />
+          </Routes>
+        </Router>
+      </CoachProvider>
     </div>
   );
 }

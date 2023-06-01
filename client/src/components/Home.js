@@ -1,11 +1,11 @@
-import React from "react";
+import { useState, useContext } from "react";
 import Header from "./Header";
 import "./Home.css";
+import { CoachContext } from "../context/coach";
 
-function Home({ loggedInCoach, loggedInParent }) {
+function Home({ loggedInParent }) {
 
-    console.log(loggedInCoach);
-    console.log(loggedInParent);
+    const { loggedInCoach, setLoggedInCoach } = useContext(CoachContext);
 
     return (
         <div>
@@ -14,7 +14,7 @@ function Home({ loggedInCoach, loggedInParent }) {
                     <div>{loggedInCoach ? loggedInCoach.fname : null}</div>
                     <div>{loggedInParent ? loggedInParent.fname : null}</div>
                     <h1>Welcome to HomeBase</h1>
-                    <p>The ultimate online hub for teams to stay connected, share laughs, and coordinate schedules.</p>
+                    <p>The ultimate online hub for teams to stay connected and coordinate schedules.</p>
                 </div>
             </div>
         </div>
